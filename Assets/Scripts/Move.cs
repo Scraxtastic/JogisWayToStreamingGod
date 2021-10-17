@@ -28,7 +28,7 @@ public class Move : MonoBehaviour
         float x = transform.position.x;
         if (x < leftBoundary || x > rightBoundary)
         {
-            transform.position = new Vector3(0, 0, 0);
+            transform.position = new Vector3(0, 0, transform.position.z);
         }
 
     }
