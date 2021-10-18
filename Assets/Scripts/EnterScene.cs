@@ -21,7 +21,6 @@ public class EnterScene : MonoBehaviour
     }
     void OnMouseDown()
     {
-        print("Down");
         SceneManager.LoadScene(SceneName, LoadSceneMode.Single);
     }
 }

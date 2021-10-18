@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MoveToPoint : MonoBehaviour
 {
-    public Vector2 StartPoint;
+    public Vector2 DistanceVector;
     public float TimeToReach = 5;
     private Vector3 _velocity;
     private float _startTime;
@@ -13,10 +13,9 @@ public class MoveToPoint : MonoBehaviour
     void Start()
     {
         _destination = transform.position;
-        Vector3 distance = new Vector2(transform.position.x - StartPoint.x, transform.position.y - StartPoint.y);
-        _velocity = distance / TimeToReach;
+        _velocity = -(DistanceVector.normalized * (DistanceVector.magnitude / TimeToReach));
         _startTime = Time.time;
-        transform.position = StartPoint;
+        transform.position = new Vector2(_destination.x + DistanceVector.x, _destination.y + DistanceVector.y);
     }
 
     // Update is called once per frame
