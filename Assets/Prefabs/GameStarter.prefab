@@ -192,7 +192,6 @@ GameObject:
   - component: {fileID: 4489662942921102798}
   - component: {fileID: 4489662942921102793}
   - component: {fileID: 5226153611503997460}
-  - component: {fileID: 5377444793970629320}
   - component: {fileID: 2833183214509559520}
   - component: {fileID: -2172639448041639212}
   m_Layer: 0
@@ -318,19 +317,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: -0.005}
   m_Size: {x: 1, y: 1.01}
   m_Direction: 0
---- !u!114 &5377444793970629320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4489662942921102796}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cb92fe8ff8c8044bb4ebbc63b60d123, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RotationToAdd: -5
 --- !u!114 &2833183214509559520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,4 +342,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9c058e795f1cfc4f8dcf10ead9c66ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSpeed: 10
+  MaxSpeed: 5
+  MaxRotationSpeed: 60

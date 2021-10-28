@@ -22,7 +22,7 @@ public class Attack : MonoBehaviour
     {
         if (healthSystem.Attack(attackDamage) <= 0)
         {
-            DataStorage.jogicoins += healthSystem.initialHealth;
+            DataStorage.JogiCoins += healthSystem.initialHealth;
             Destroy(gameObject);
         }
     }

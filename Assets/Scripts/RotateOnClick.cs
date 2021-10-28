@@ -19,6 +19,6 @@ public class RotateOnClick : MonoBehaviour
 
     private void OnMouseDown()
     {
-        transform.rotation = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z + RotationPerClick);
+        DataStorage.AddClickRotationOnJogiButton();
     }
 }

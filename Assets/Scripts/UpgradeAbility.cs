@@ -7,15 +7,22 @@ using static DataStorage;
 public class UpgradeAbility : MonoBehaviour
 {
     public PossibleUpgrade UpgradeName;
-    private Text _text;
+    private Text _name;
     private Text _price;
+    private Text _level;
     // Start is called before the first frame update
     void Start()
     {
         Button button = GetComponent<Button>();
         if (button) button.onClick.AddListener(OnMouseDown);
-        _text = GetComponentInChildren<Text>();
-        _price = GetComponentInChildren<Text>();
+        Text[] texts = GetComponentsInChildren<Text>();
+        if (texts.Length >= 3)
+        {
+            _name = texts[0];
+            _price = texts[1];
+            _level = texts[2];
+            SetTexts();
+        }
 
     }
 
@@ -27,7 +34,15 @@ public class UpgradeAbility : MonoBehaviour
     private void OnMouseDown()
     {
         DataStorage.Upgrade(UpgradeName);
-        if (_text)
-            _text.text = DataStorage.GetUpgradeLevel(UpgradeName);
+        SetTexts();
+    }
+    private void SetTexts()
+    {
+        if (_name)
+            _name.text = DataStorage.GetUpgradeName(UpgradeName);
+        if (_price)
+            _price.text = DataStorage.GetUpgradeCost(UpgradeName);
+        if (_level)
+            _level.text = DataStorage.GetUpgradeLevel(UpgradeName);
     }
 }
