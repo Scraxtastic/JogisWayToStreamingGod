@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts
 {
-    class Ability
+    [System.Serializable]
+    public class Ability
     {
         public float InitialCost { get; set; }
         public float Cost { get; set; }

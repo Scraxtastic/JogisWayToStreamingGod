@@ -20,6 +20,7 @@ public class DataStorage : MonoBehaviour
     public static float MahoniSpeed { get; set; } = 1;
     //
     private static bool _abilitiesAreSet = false;
+    private static bool _fileLoaded = false;
     private static float _rotationToAdd = 0;
     private double _moneyToAdd;
     private static Ability _attack;
@@ -28,6 +29,8 @@ public class DataStorage : MonoBehaviour
     private static Ability _mahoniSpeed;
     private float _textUpdateTime = 0.1f;
     private float _lastTextUpdate;
+    private float _lastSaveTime;
+    private float _savePeriod = 5;
     public enum PossibleUpgrade
     {
         Attack = 1,
@@ -42,6 +45,7 @@ public class DataStorage : MonoBehaviour
     {
         _lastTextUpdate = -_textUpdateTime;
         SetUpgrades();
+        LoadData();
     }
 
     // Update is called once per frame
@@ -57,8 +61,24 @@ public class DataStorage : MonoBehaviour
         }
         if (SceneManager.GetActiveScene().name.ToLower() == "maingame")
             UpdateMainGame();
+        UpdatePassiveMoneyIncome();
+        if (Time.time > _lastSaveTime + _savePeriod)
+        {
+            _lastSaveTime = Time.time;
+            SaveData();
+        }
     }
 
+    private void UpdatePassiveMoneyIncome()
+    {
+        _moneyToAdd += _mahonis.Level * _mahoniSpeed.Power * Time.deltaTime;
+        if (_moneyToAdd >= 0.1)
+        {
+            float moneyToAdd = (float)_moneyToAdd;
+            JogiCoins += moneyToAdd;
+            _moneyToAdd -= moneyToAdd;
+        }
+    }
     private void UpdateMainGame()
     {
         if (MahoniCount != _mahonis.Level)
@@ -66,15 +86,10 @@ public class DataStorage : MonoBehaviour
         if (MahoniSpeed != _mahoniSpeed.Power)
             MahoniSpeed = _mahoniSpeed.Power;
         SetJogiButtonSize(_jogiSize.Power);
-        _moneyToAdd += _rotationToAdd * 10 + _mahonis.Level * _mahoniSpeed.Power * Time.deltaTime;
+        _moneyToAdd += _rotationToAdd * 10 ;
         _rotationToAdd += (_mahonis.Level * _mahoniSpeed.Power / 10) * Time.deltaTime;
         RotateJogiButton(_rotationToAdd);
-        if (_moneyToAdd >= 0.1)
-        {
-            float moneyToAdd = (float)_moneyToAdd;
-            JogiCoins += moneyToAdd;
-            _moneyToAdd -= moneyToAdd;
-        }
+        
         _rotationToAdd = 0;
     }
 
@@ -93,7 +108,7 @@ public class DataStorage : MonoBehaviour
 
     public static void AddClickRotationOnJogiButton()
     {
-        _rotationToAdd += (_attack.Power/10);
+        _rotationToAdd += (_attack.Power / 10);
     }
 
     static void SetUpgrades()
@@ -101,10 +116,10 @@ public class DataStorage : MonoBehaviour
         if (_abilitiesAreSet) return;
         _attack = new Ability().WithInitialCost(20).WithLevel(1).WithCostMultiplier(1.5f).WithName("Attack").WithCostMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
         _attack.WithInitialPower(1).WithPowerMultiplier(1.1f).WithPowerMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
-        _jogiSize = new Ability().WithInitialCost(300).WithLevel(1).WithCostMultiplier(1.03f).WithName("Jogi size").WithCostMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
+        _jogiSize = new Ability().WithInitialCost(300).WithLevel(1).WithCostMultiplier(1.06f).WithName("Jogi size").WithCostMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
         _jogiSize.WithInitialPower(1).WithPowerMultiplier(0.02f).WithPowerMultiplierType(Ability.MultiplierTypes.LinearMultiplier);
-        _mahonis = new Ability().WithInitialCost(200).WithLevel(0).WithCostMultiplier(1.8f).WithName("Mahoni amount").WithCostMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
-        _mahoniSpeed = new Ability().WithInitialCost(202).WithLevel(1).WithCostMultiplier(1.8f).WithName("Mahoni speed").WithCostMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
+        _mahonis = new Ability().WithInitialCost(200).WithLevel(0).WithCostMultiplier(1.2f).WithName("Mahoni amount").WithCostMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
+        _mahoniSpeed = new Ability().WithInitialCost(202).WithLevel(1).WithCostMultiplier(1.7f).WithName("Mahoni speed").WithCostMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
         _mahoniSpeed.WithInitialPower(1).WithPowerMultiplier(1.08f).WithPowerMultiplierType(Ability.MultiplierTypes.SoftLogarithmic);
         _abilitiesAreSet = true;
     }
@@ -169,6 +184,28 @@ public class DataStorage : MonoBehaviour
             PossibleUpgrade.Mahonispeed => _mahoniSpeed.GetCostRounded(),
             _ => "GRRR Cost",
         };
+    }
+
+    public void SaveData()
+    {
+        Ability[] abilities = new Ability[] { _attack, _jogiSize, _mahonis, _mahoniSpeed };
+        SaveObject saveObject = new SaveObject().WithAbilities(abilities).WithJogiCoins(JogiCoins);
+        FileManager.SaveFile(saveObject);
+    }
+
+    public void LoadData()
+    {
+        if (_fileLoaded) return;
+        _fileLoaded = true;
+        SaveObject saveObject = FileManager.LoadFile();
+        if (saveObject == null)
+            return;
+        JogiCoins = saveObject.JogiCoins;
+        Ability[] abilities = saveObject.Abilities;
+        _attack = abilities[0];
+        _jogiSize = abilities[1];
+        _mahonis = abilities[2];
+        _mahoniSpeed = abilities[3];
     }
 
 }
