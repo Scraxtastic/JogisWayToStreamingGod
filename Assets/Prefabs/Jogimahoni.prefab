@@ -101,7 +101,6 @@ GameObject:
   - component: {fileID: 1253049619445255494}
   - component: {fileID: 7587821522976670506}
   - component: {fileID: 3221897293074649449}
-  - component: {fileID: 798480269631752200}
   - component: {fileID: 32144390059110617}
   m_Layer: 0
   m_Name: Image
@@ -167,19 +166,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &798480269631752200
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1757453107407564733}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f76777ec07a9574cb381740b94bc303, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WebURL: https://www.twitch.tv/jogi1993
 --- !u!114 &32144390059110617
 MonoBehaviour:
   m_ObjectHideFlags: 0
