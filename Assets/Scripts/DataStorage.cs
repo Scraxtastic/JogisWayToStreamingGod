@@ -31,6 +31,8 @@ public class DataStorage : MonoBehaviour
     private float _lastTextUpdate;
     private float _lastSaveTime;
     private float _savePeriod = 5;
+    private string _relativePath = "/save.dat";
+    private string _relativeSettingsPath = "/settings.dat";
     public enum PossibleUpgrade
     {
         Attack = 1,
@@ -190,14 +192,15 @@ public class DataStorage : MonoBehaviour
     {
         Ability[] abilities = new Ability[] { _attack, _jogiSize, _mahonis, _mahoniSpeed };
         SaveObject saveObject = new SaveObject().WithAbilities(abilities).WithJogiCoins(JogiCoins);
-        FileManager.SaveFile(saveObject);
+        saveObject.WithVolume(AudioListener.volume);
+        FileManager.SaveFile(saveObject, _relativePath);
     }
 
     public void LoadData()
     {
         if (_fileLoaded) return;
         _fileLoaded = true;
-        SaveObject saveObject = FileManager.LoadFile();
+        SaveObject saveObject = FileManager.LoadFile(_relativePath);
         if (saveObject == null)
             return;
         JogiCoins = saveObject.JogiCoins;
@@ -206,6 +209,8 @@ public class DataStorage : MonoBehaviour
         _jogiSize = abilities[1];
         _mahonis = abilities[2];
         _mahoniSpeed = abilities[3];
+        AudioListener.volume = saveObject.Volume;
     }
+
 
 }

@@ -7,10 +7,9 @@ using UnityEngine;
 
 public class FileManager : MonoBehaviour
 {
-    public static string RelativeFilePath = "/save.dat";
-    public static void SaveFile(SaveObject saveObject)
+    public static void SaveFile(SaveObject saveObject, string relativeFilePath)
     {
-        string destination = Application.persistentDataPath + RelativeFilePath;
+        string destination = Application.persistentDataPath + relativeFilePath;
         FileStream file;
 
         if (File.Exists(destination)) file = File.OpenWrite(destination);
@@ -21,9 +20,9 @@ public class FileManager : MonoBehaviour
         file.Close();
     }
 
-    public static SaveObject LoadFile()
+    public static SaveObject LoadFile(string relativeFilePath)
     {
-        string destination = Application.persistentDataPath + RelativeFilePath;
+        string destination = Application.persistentDataPath + relativeFilePath;
         FileStream file;
 
         if (File.Exists(destination))

@@ -8,6 +8,7 @@ public class SaveObject
 {
     public Ability[] Abilities { get; set; }
     public float JogiCoins { get; set; }
+    public float Volume { get; set; }
     public SaveObject()
     {
 
@@ -22,6 +23,11 @@ public class SaveObject
     public SaveObject WithJogiCoins(float jogiCoins)
     {
         JogiCoins = jogiCoins;
+        return this;
+    }
+    public SaveObject WithVolume(float volume)
+    {
+        Volume = volume;
         return this;
     }
 }

@@ -12,7 +12,10 @@ public class SetGlobalAudioToSliderValue : MonoBehaviour
     {
         _slider = GetComponent<Slider>();
         if (_slider != null)
+        {
             _slider.onValueChanged.AddListener(delegate { ValueChangeCheck(); });
+            _slider.value = AudioListener.volume;
+        }
     }
     // Invoked when the value of the slider changes.
     public void ValueChangeCheck()
