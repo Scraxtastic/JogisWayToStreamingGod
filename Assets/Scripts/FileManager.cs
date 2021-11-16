@@ -1,15 +1,27 @@
 using Assets.Scripts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
-public class FileManager : MonoBehaviour
+public class FileManager<T>
 {
-    public static void SaveFile(SaveObject saveObject, string relativeFilePath)
+    public string RelativeFilePath { get; set; }
+    public FileManager()
     {
-        string destination = Application.persistentDataPath + relativeFilePath;
+
+    }
+
+    public FileManager(string relativeFilePath)
+    {
+        RelativeFilePath = relativeFilePath;
+    }
+
+    public void SaveFile(T saveObject)
+    {
+        string destination = Application.persistentDataPath + RelativeFilePath;
         FileStream file;
 
         if (File.Exists(destination)) file = File.OpenWrite(destination);
@@ -20,26 +32,32 @@ public class FileManager : MonoBehaviour
         file.Close();
     }
 
-    public static SaveObject LoadFile(string relativeFilePath)
+    public T LoadFile()
     {
-        string destination = Application.persistentDataPath + relativeFilePath;
-        FileStream file;
-
-        if (File.Exists(destination))
+        try
         {
-            file = File.OpenRead(destination);
+            string destination = Application.persistentDataPath + RelativeFilePath;
+            FileStream file;
+
+            if (File.Exists(destination))
+            {
+                file = File.OpenRead(destination);
+            }
+            else
+            {
+                Debug.LogError("File not found");
+                return default;
+            }
+
+            BinaryFormatter bf = new BinaryFormatter();
+            T saveObject = (T)bf.Deserialize(file);
+            file.Close();
+            return saveObject;
         }
-        else
+        catch (UnauthorizedAccessException)
         {
-            Debug.LogError("File not found");
-            return null;
+            return default;
         }
-
-        BinaryFormatter bf = new BinaryFormatter();
-        SaveObject saveObject = (SaveObject)bf.Deserialize(file);
-        file.Close();
-        return saveObject;
-
     }
 
 }
