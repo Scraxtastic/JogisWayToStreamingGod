@@ -33,6 +33,8 @@ public class DataStorage : MonoBehaviour
     private float _savePeriod = 5;
     private string _relativePath = "/save.dat";
     private string _relativeSettingsPath = "/settings.dat";
+    private FileManager<SaveObject> _saveFileManager;
+    private FileManager<SettingsSaveObject> _settingsSaveFileManager;
     public enum PossibleUpgrade
     {
         Attack = 1,
@@ -45,9 +47,12 @@ public class DataStorage : MonoBehaviour
 
     private void Awake()
     {
+        _saveFileManager = new FileManager<SaveObject>(_relativePath);
+        _settingsSaveFileManager = new FileManager<SettingsSaveObject>(_relativeSettingsPath);
         _lastTextUpdate = -_textUpdateTime;
         SetUpgrades();
         LoadData();
+        HandleSettings.Data = this;
     }
 
     // Update is called once per frame
@@ -73,14 +78,17 @@ public class DataStorage : MonoBehaviour
 
     private void UpdatePassiveMoneyIncome()
     {
+        if (_mahonis == null || _mahoniSpeed == null) return;
         _moneyToAdd += _mahonis.Level * _mahoniSpeed.Power * Time.deltaTime;
         if (_moneyToAdd >= 0.1)
         {
+
             float moneyToAdd = (float)_moneyToAdd;
             JogiCoins += moneyToAdd;
             _moneyToAdd -= moneyToAdd;
         }
     }
+
     private void UpdateMainGame()
     {
         if (MahoniCount != _mahonis.Level)
@@ -88,10 +96,10 @@ public class DataStorage : MonoBehaviour
         if (MahoniSpeed != _mahoniSpeed.Power)
             MahoniSpeed = _mahoniSpeed.Power;
         SetJogiButtonSize(_jogiSize.Power);
-        _moneyToAdd += _rotationToAdd * 10 ;
+        _moneyToAdd += _rotationToAdd * 10;
         _rotationToAdd += (_mahonis.Level * _mahoniSpeed.Power / 10) * Time.deltaTime;
         RotateJogiButton(_rotationToAdd);
-        
+
         _rotationToAdd = 0;
     }
 
@@ -154,7 +162,7 @@ public class DataStorage : MonoBehaviour
         }
     }
 
-    public static string GetUpgradeLevel(PossibleUpgrade abilityToGet)
+    public static string GetUpgradeLevelAsText(PossibleUpgrade abilityToGet)
     {
         return abilityToGet switch
         {
@@ -165,6 +173,7 @@ public class DataStorage : MonoBehaviour
             _ => "GRRR Level",
         };
     }
+
     public static string GetUpgradeName(PossibleUpgrade abilityToGet)
     {
         return abilityToGet switch
@@ -176,7 +185,8 @@ public class DataStorage : MonoBehaviour
             _ => "GRRR Name",
         };
     }
-    public static string GetUpgradeCost(PossibleUpgrade abilityToGet)
+
+    public static string GetUpgradeCostAsText(PossibleUpgrade abilityToGet)
     {
         return abilityToGet switch
         {
@@ -187,21 +197,41 @@ public class DataStorage : MonoBehaviour
             _ => "GRRR Cost",
         };
     }
+    public static float GetUpgradeCost(PossibleUpgrade abilityToGet)
+    {
+        return abilityToGet switch
+        {
+            PossibleUpgrade.Attack => _attack.Cost,
+            PossibleUpgrade.JogiSize => _jogiSize.Cost,
+            PossibleUpgrade.MahoniAmount => _mahonis.Cost,
+            PossibleUpgrade.Mahonispeed => _mahoniSpeed.Cost,
+            _ => -1,
+        };
+    }
 
     public void SaveData()
     {
         Ability[] abilities = new Ability[] { _attack, _jogiSize, _mahonis, _mahoniSpeed };
         SaveObject saveObject = new SaveObject().WithAbilities(abilities).WithJogiCoins(JogiCoins);
-        saveObject.WithVolume(AudioListener.volume);
-        FileManager.SaveFile(saveObject, _relativePath);
+        //saveObject.WithVolume(AudioListener.volume);
+        _saveFileManager.SaveFile(saveObject);
+    }
+
+    public void SaveSettings()
+    {
+        SettingsSaveObject settingsSaveObject = new SettingsSaveObject();
+        settingsSaveObject.WithVolume(AudioListener.volume)
+            .WithFrameLimit(Application.targetFrameRate)
+            .WithVSync(QualitySettings.vSyncCount);
+        _settingsSaveFileManager.SaveFile(settingsSaveObject);
     }
 
     public void LoadData()
     {
         if (_fileLoaded) return;
         _fileLoaded = true;
-        SaveObject saveObject = FileManager.LoadFile(_relativePath);
-        if (saveObject == null)
+        SaveObject saveObject = _saveFileManager.LoadFile();
+        if (saveObject == default(SaveObject))
             return;
         JogiCoins = saveObject.JogiCoins;
         Ability[] abilities = saveObject.Abilities;
@@ -209,7 +239,18 @@ public class DataStorage : MonoBehaviour
         _jogiSize = abilities[1];
         _mahonis = abilities[2];
         _mahoniSpeed = abilities[3];
-        AudioListener.volume = saveObject.Volume;
+        LoadSettings();
+    }
+
+    public void LoadSettings()
+    {
+        SettingsSaveObject settingsSaveObject = _settingsSaveFileManager.LoadFile();
+        if (settingsSaveObject == default(SettingsSaveObject))
+            return;
+        AudioListener.volume = settingsSaveObject.Volume;
+        Application.targetFrameRate = settingsSaveObject.FrameLimit;
+        QualitySettings.vSyncCount = settingsSaveObject.VSync;
+
     }
 
 
