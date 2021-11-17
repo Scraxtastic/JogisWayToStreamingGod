@@ -52,6 +52,7 @@ public class DataStorage : MonoBehaviour
         _lastTextUpdate = -_textUpdateTime;
         SetUpgrades();
         LoadData();
+        HandleSettings.Data = this;
     }
 
     // Update is called once per frame
@@ -214,13 +215,14 @@ public class DataStorage : MonoBehaviour
         SaveObject saveObject = new SaveObject().WithAbilities(abilities).WithJogiCoins(JogiCoins);
         //saveObject.WithVolume(AudioListener.volume);
         _saveFileManager.SaveFile(saveObject);
-        SaveSettings();
     }
 
     public void SaveSettings()
     {
         SettingsSaveObject settingsSaveObject = new SettingsSaveObject();
-        settingsSaveObject.withVolume(AudioListener.volume);
+        settingsSaveObject.WithVolume(AudioListener.volume)
+            .WithFrameLimit(Application.targetFrameRate)
+            .WithVSync(QualitySettings.vSyncCount);
         _settingsSaveFileManager.SaveFile(settingsSaveObject);
     }
 
@@ -246,6 +248,9 @@ public class DataStorage : MonoBehaviour
         if (settingsSaveObject == default(SettingsSaveObject))
             return;
         AudioListener.volume = settingsSaveObject.Volume;
+        Application.targetFrameRate = settingsSaveObject.FrameLimit;
+        QualitySettings.vSyncCount = settingsSaveObject.VSync;
+
     }
 
 
