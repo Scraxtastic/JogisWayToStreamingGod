@@ -11,11 +11,25 @@ public class UpgradeAbility : MonoBehaviour
     private Text _price;
     private Text _level;
     Button _button;
+    Image _image;
+
+    private Color _defaultColor;
+    private Color _disabledColor = new Color(.3f, .3f, .3f);
+    private AudioSource _clickSound;
     // Start is called before the first frame update
     void Start()
     {
         _button = GetComponent<Button>();
-        if (_button) _button.onClick.AddListener(OnMouseDown);
+        _image = GetComponent<Image>();
+        _clickSound = GetComponent<AudioSource>();
+        if (_image)
+        {
+            _defaultColor = _image.color;
+        }
+        if (_button)
+        {
+            _button.onClick.AddListener(OnMouseDown);
+        }
         Text[] texts = GetComponentsInChildren<Text>();
         if (texts.Length >= 3)
         {
@@ -30,13 +44,17 @@ public class UpgradeAbility : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!_button) return;
-        _button.enabled = DataStorage.JogiCoins > getPrice();
+        if (_button)
+            _button.enabled = DataStorage.JogiCoins > getPrice();
+        if (_image)
+            _image.color = _button.enabled ? _defaultColor : _disabledColor;
     }
     private void OnMouseDown()
     {
         DataStorage.Upgrade(UpgradeName);
         SetTexts();
+        if (_clickSound != null)
+            _clickSound.Play();
     }
 
     private float getPrice()
