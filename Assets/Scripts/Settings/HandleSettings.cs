@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static Assets.Scripts.ResolutionOption;
 using static UnityEngine.UI.Dropdown;
 
 public class HandleSettings : MonoBehaviour
